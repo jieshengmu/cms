@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace 填写持久层接口的全限定路径名 -->
+<mapper namespace="cn.itsource.mapper.ArticleMapper">
+<!-- List<Article> findAll(ArticleQuery query);根据条件进行查询分页-->
+<select id="findAll" resultType="Article">
+select * from t_article 
+<include refid="query"></include>
+limit #{begin},#{pageSize}
+</select>
+
+
+
+<!--Integer findCount(ArticleQuery query);根据条件进行查询数据的总条数-->
+<select id="findCount" resultType="int">
+select count(id) from t_article
+
+<include refid="query"></include>
+ 
+</select>
+
+<!-- void del(Integer id); 传入id进行删除 -->
+<delete id="del">
+delete from t_article where id = #{id}
+</delete>
+
+
+<!-- void add(Article article); -->
+
+<insert id="add">
+insert into t_article (title,url,typeId,clickCount,content,
+			createDate, enable) values(#{title},#{url},#{typeId},#{clickCount},#{content},
+			#{createDate},#{enable})
+</insert>
+	
+<!-- void update(Article article); -->
+<update id="update">
+
+update t_article set title=#{title},url=#{url},typeId=#{typeId},clickCount=#{clickCount},content=#{content},
+			createDate=#{createDate}, enable=#{enable} where id = #{id}
+</update>
+
+
+<!-- List<Article> findArticleByCode(String code);根据文章类型code进行查询 -->
+
+<select id="findArticleByCode" resultType="Article">
+select * from t_article t1 inner join t_article_type t2
+on t1.typeId = t2.id
+where enable = 1
+and t2.code = #{code}
+order by createDate DESC
+limit 0,8
+
+</select>
+
+<!-- Article findById(Long id);根据id获取对象 -->
+<select id="findById" resultType="Article">
+select * from  t_article where id = #{id}
+
+</select>
+
+
+<!-- Article findByUrl(String url); 根据url进行查询 -->
+<select id="findByUrl" resultType="Article">
+select * from  t_article where url = #{url}
+
+</select>
+
+<!-- 公用sql -->
+<sql id="query">
+<where>
+<if test="typeId != null">
+and typeId = #{typeId}
+</if>
+<if test="enable != null">
+and enable = #{enable}
+</if>
+<!-- trim() 用于去掉两端空白字符串 -->
+<if test="title != null and '' != title.trim()">
+<!-- concat mysql的函数用于拼接字符串 -->
+and title like concat('%',trim(#{title}),'%') 
+</if>
+</where>
+
+</sql>
+
+
+</mapper>

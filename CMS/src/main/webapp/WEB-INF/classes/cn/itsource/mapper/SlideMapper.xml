@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace 填写持久层接口的全限定路径名 -->
+<mapper namespace="cn.itsource.mapper.SlideMapper">
+	<!-- List<Slide> findAll(SlideQuery query);根据条件进行查询分页 -->
+	<select id="findAll" resultType="Slide">
+		select * from t_slide
+		<include refid="query"></include>
+		limit #{begin},#{pageSize}
+	</select>
+
+	<!--Integer findCount(SlideQuery query);;根据条件进行查询数据的总条数 -->
+	<select id="findCount" resultType="int">
+		select count(id) from t_slide
+		<include refid="query"></include>
+	</select>
+	<!-- void add(Slide slide);添加 -->
+	<insert id="add">
+		insert into t_slide (name,path,createDate,enable)
+		values(#{name},#{path},#{createDate},#{enable})
+
+	</insert>
+
+	<!-- void update(Slide slide);更新 -->
+
+	<update id="update">
+		update t_slide <set>
+		<if test="name != null">
+			name = #{name},
+		</if>
+		<if test="path != null">
+			path = #{path},
+		</if>
+		enable=#{enable},createDate=#{createDate}
+		</set>
+		 where id = #{id}
+	</update>
+	
+	
+	
+	<!-- Slide findById(Long id); 根据id查询图片 -->
+	<select id="findById" resultType="Slide">
+		select * from t_slide where id = #{id}
+	</select>
+	
+	
+	
+	
+
+	<!--void del(Long id); 根据id进行删除 -->
+	<delete id="del">
+		delete from t_slide where id = #{id}
+	</delete>
+	
+	
+	<!-- List<Slide> getSlides();查询所有轮播图 -->
+	<select id="getSlides" resultType="Slide">
+		select * from t_slide where enable = 1
+	</select>
+	
+
+	<!-- 公用sql -->
+	<sql id="query">
+		<where>
+			<if test="enable != null">
+				and enable = #{enable}
+			</if>
+			<!-- trim() 用于去掉两端空白字符串 -->
+			<if test="name != null and '' != name.trim()">
+				<!-- concat mysql的函数用于拼接字符串 -->
+				and name like concat('%',trim(#{name}),'%')
+			</if>
+		</where>
+	</sql>
+
+
+
+
+</mapper>

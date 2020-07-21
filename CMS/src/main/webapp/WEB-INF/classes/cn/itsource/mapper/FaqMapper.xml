@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace 填写持久层接口的全限定路径名 -->
+<mapper namespace="cn.itsource.mapper.FaqMapper">
+	<!-- List<FAQ> findAll(FaqQuery query);查询所有常见问题) -->
+	<select id="findAll" resultType="FAQ">
+		select * from t_faq
+		<include refid="query"></include>
+		ORDER BY orderBy ASC
+		limit #{begin},#{pageSize}
+	</select>
+
+	<!--Integer findCount(FaqQuery query); (作用:根据条件查询常见问题总条数) -->
+	<select id="findCount" resultType="int">
+		select count(id) from t_faq
+		<include refid="query"></include>
+	</select>
+	
+	<!-- void del(Long id);据id进行删除  -->
+	<delete id="del">
+	delete from t_faq where id = #{id}
+	</delete>
+	<!-- void add(FAQ faq);添加，常见问题 -->
+	<insert id="add">
+	insert into t_faq (title,content,createDate,orderBy) values(#{title},#{content},#{createDate},#{orderBy})
+	</insert>
+	
+
+	<!-- void update(FAQ faq); 修改，常见问题 -->
+	<update id="update">
+	update t_faq set title=#{title},content=#{content},createDate=#{createDate},orderBy=#{orderBy} where id = #{id}
+	</update>
+	<!-- List<FAQ> faqs();获取所有常见问题  -->
+	<select id="faqs" resultType="FAQ">
+	select * from t_faq 
+	ORDER BY orderBy ASC
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+
+	<!-- 公用sql -->
+	<sql id="query">
+		<where>
+			<!-- trim() 用于去掉两端空白字符串 -->
+			<if test="title != null and '' != title.trim()">
+				<!-- concat mysql的函数用于拼接字符串 -->
+				and title like concat('%',trim(#{title}),'%')
+			</if>
+		</where>
+
+	</sql>
+
+
+</mapper>
